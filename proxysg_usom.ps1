@@ -1,6 +1,3 @@
-If (Test-Path -Path c:\proxysg\proxysgdb.txt ) {
-Remove-Item c:\proxysg\proxysgdb.txt
-}
 $lines=@()
 Invoke-WebRequest https://www.usom.gov.tr/url-list.txt -OutFile c:\proxysg\usomlist.txt
 $list =  Get-ChildItem -Path c:\proxysg\usomlist.txt
@@ -10,6 +7,8 @@ $regex = ‘\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b’
 $ipout = @()
 $urlout =@()
 $urlout1 =@()
+$urlout2 =@()
+$urlout3 =@()
 $ips = $($lines | Select-String -Pattern $regex -AllMatches) |  % { $_.Matches } | % { $_.Value }
 $urls = $($lines | Select-String -Pattern $regex -NotMatch ) | select -ExpandProperty line
 
@@ -44,7 +43,30 @@ foreach($url in $urls)
       $urlout1 += $splithttp[1]}
       else{
       $urlout1 += $url1}
-}
+    }
+foreach($url2 in $urlout1)
+    {
+    $split2 = ($url2.Split('=')[0])
+      if ($split2 -match ',')
+      {
+        $urlout2+= ($split2.Split(',')[0])
+      }
+            else{
+      $urlout2 += $url2}
+
+    }
+foreach($url3 in $urlout2)
+    {
+    $split3 = ($url3.Split('=')[0])
+      if ($split3 -match '\)')
+      {
+        $urlout3+= ($split3.Replace(')',''))
+      }
+            else{
+      $urlout3 += $url3}
+
+    }
+
 
 
 
@@ -56,7 +78,12 @@ $iplines += $ipout| sort | Get-Unique
 #uniqe URL
 $urllines = @()
 #$urllines += $urlout| sort | Get-Unique
-$urllines += $urlout1| sort | Get-Unique
+$urllines += $urlout3| sort | Get-Unique
+
+
+If (Test-Path -Path c:\proxysg\proxysgdb.txt ) {
+Remove-Item c:\proxysg\proxysgdb.txt
+}
 
 
 Add-Content -Path C:\proxysg\proxysgdb.txt -Value  ('define category "USOM_IP"')
