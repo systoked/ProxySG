@@ -1,3 +1,5 @@
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls, [Net.SecurityProtocolType]::Tls11, [Net.SecurityProtocolType]::Tls12, [Net.SecurityProtocolType]::Ssl3
+[Net.ServicePointManager]::SecurityProtocol = "Tls, Tls11, Tls12, Ssl3"
 $lines=@()
 Invoke-WebRequest https://www.usom.gov.tr/url-list.txt -OutFile c:\proxysg\usomlist.txt
 $list =  Get-ChildItem -Path c:\proxysg\usomlist.txt
